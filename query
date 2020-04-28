@@ -1,0 +1,59 @@
+##引入宏定义
+$!define
+
+##使用宏定义设置回调（保存位置与文件后缀）
+#save("/query", "PageQuery.java")
+
+##使用宏定义设置包后缀
+#setPackageSuffix("query")
+
+##使用全局变量实现默认包导入
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import javax.validation.constraints.Min;
+
+$!autoImport
+import java.io.Serializable;
+
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+##使用宏定义实现类注释信息
+#tableComment("分页查询类")
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+public class $!{tableInfo.name}PageQuery implements Serializable {
+ 
+#foreach($column in $tableInfo.fullColumn)
+  #if($pk.name!=$column.name&&$column.name!= 'createTime'&& $column.name!= 'updateTime')
+  
+    #if(${column.comment})/**
+    * ${column.comment}
+    * 
+    */#end 
+ 
+    @ApiModelProperty(value ="$!{column.comment}",example=#if($column.name== 'createTime'||$column.name== 'updateTime')"2020-04-24 07:30:35"#else"example"#end)  
+    private $!{tool.getClsNameByFullName($column.type)} $!{column.name};  
+  #end  
+#end
+
+    /**
+     * 页码
+     */
+    @Min(1)
+    @ApiModelProperty(value = "页码，最小为1", example = "1")
+    private Integer page = 1;
+
+    /**
+     * 每页大小
+     */
+    @Min(1)
+    @ApiModelProperty(value = "页面含有元素数量", example = "10")
+    private Integer pageSize = 10;
+
+}
