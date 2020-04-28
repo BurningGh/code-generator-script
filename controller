@@ -1,0 +1,149 @@
+##引入宏定义
+$!define
+##定义初始变量
+#set($tableName = $tableInfo.name)
+#set($lowTableName = $!tool.firstLowerCase($tableName))
+#set($tableComment = $tableInfo.comment)
+#set($entity = $tool.append($!{tableName}, "DO"))
+#set($lowEntity = $!tool.firstLowerCase($entity))
+##设置回调
+$!callback.setFileName($tool.append($tableName, "Controller.java"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/controller"))
+
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+#if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}controller;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import $!{tableInfo.savePackageName}.entity.$!{tableName}DO;
+import $!{tableInfo.savePackageName}.service.I$!{tableName}Service;
+import $!{tableInfo.savePackageName}.query.$!{tableName}PageQuery;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+
+import javax.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
+
+##使用宏定义实现类注释信息
+#tableComment("控制器")
+@RestController
+@RequestMapping("$!lowTableName")
+@Validated
+@Slf4j
+public class $!{tableName}Controller{
+
+    @Resource
+    private I$!{tableName}Service $!{lowTableName}Service;
+
+    /**
+     * 通过主键id获取单条$tableComment
+     *
+     * @param id 主键
+     * @return BaseResponse<$!{entity}>
+     */
+    @ApiImplicitParam(name = "id", value = "$!{tableComment}id", required = true, dataType = "$!pk.shortType", example = "12")
+    @ApiOperation(value = "获取$tableComment", notes = "通过主键获取$tableComment")
+    @GetMapping("get")
+    public BaseResponse<$!{entity}> get(@RequestParam @Min(1) $!pk.shortType id) {
+        return new BaseResponse<>($!{lowTableName}Service.getById(id));
+    }
+    
+    /**
+     * 分页获取新$tableComment，按创建时间倒序
+     *
+     * @param $!{lowTableName}PageQuery $tableComment分页查询对象
+     * @return BaseResponse<IPage<$!{entity}>>
+     */
+    @ApiImplicitParam(name = "$!{lowTableName}PageQuery", value = "$tableComment分页查询对象", required = true, dataType = "$!{TableName}PageQuery")
+    @ApiOperation(value = "分页获取新$tableComment", notes = "分页获取新$tableComment，按创建时间倒序")
+    @PostMapping(value = "/getPage")
+    public BaseResponse<IPage<$!{entity}>> getPage(@Valid @RequestBody $!{tableName}PageQuery  $!{lowTableName}PageQuery) {
+        return new BaseResponse<>(testQuestionService.page(new Page<TestQuestionDO>($!{lowTableName}PageQuery.getPage(),$!{lowTableName}PageQuery.getPageSize()).addOrder(OrderItem.desc("createTime")), 
+        Wrappers.lambdaQuery($!{entity}.Off$!{tableName}PageQuery($!{lowTableName}PageQuery))));
+
+    }
+    
+    
+     /**
+     * 新增$tableComment
+     *
+     * @param $!{lowEntity} $tableComment
+     * @return BaseResponse<Boolean>
+     */
+    @ApiImplicitParam(name = "$!{lowEntity}", value = "$!{tableComment}对象", required = true, dataType = "$!{entity}")
+    @ApiOperation(value = "新增$!{tableComment}", notes = "新增$!{tableComment}，id不需要传")
+    @PostMapping(value = "/add")
+    public BaseResponse<Boolean> add(@Validated({InsertGroup.class}) @Valid @RequestBody $!{entity}  $!{lowEntity}) {
+        return new BaseResponse<>($!{lowTableName}Service.save($!{lowEntity}));
+    }
+    
+    /**
+     * 批量新增$tableComment
+     *
+     * @param $!{lowEntity}s $tableComment列表 
+     * @return BaseResponse<Boolean>
+     */
+    @ApiImplicitParam(name = "$!{lowEntity}s", value = "$!{tableComment}对象列表", required = true, dataType = "List")
+    @ApiOperation(value = "批量新增$!{tableComment}", notes = "批量新增$!{tableComment}，id不需要传")
+    @PostMapping(value = "/addList")
+    public BaseResponse<Boolean> addList(@Validated({InsertGroup.class}) @Valid @RequestBody List<$!{entity}>  $!{lowEntity}s) {
+        return new BaseResponse<>($!{lowTableName}Service.saveBatch($!{lowEntity}s));
+    }
+    
+    /**
+     * 通过主键id删除$tableComment
+     *
+     * @param id 主键
+     * @return BaseResponse<Boolean>
+     */
+    @ApiImplicitParam(name = "id", value = "$!{tableComment}id", required = true, dataType = "$!pk.shortType", example = "12")
+    @ApiOperation(value = "删除$tableComment", notes = "通过主键删除$tableComment")
+    @GetMapping("delete")
+    public BaseResponse<Boolean> delete(@RequestParam @Min(1) $!pk.shortType id) {
+        return new BaseResponse<>($!{lowTableName}Service.removeById(id));
+    }
+    
+    /**
+     * 通过主键id批量删除$tableComment
+     *
+     * @param ids 主键列表
+     * @return BaseResponse<Boolean>
+     */
+    @ApiImplicitParam(name = "ids", value = "$!{tableComment}id列表", required = true, dataType = "List", example = "12,13,14")
+    @ApiOperation(value = "批量删除$tableComment", notes = "通过主键批量删除$tableComment")
+    @GetMapping("deleteList")
+    public BaseResponse<Boolean> deleteList(@RequestParam @Min(1) List<$!pk.shortType> ids) {
+        return new BaseResponse<>($!{lowTableName}Service.removeByIds(ids));
+    }
+    
+    
+    
+    /**
+     * 通过主键id更新$tableComment
+     *
+     * @param $!{lowEntity} $tableComment
+     * @return BaseResponse<Boolean>
+     */
+    @ApiImplicitParam(name = "$!{lowEntity}", value = "$tableComment对象", required = true, dataType = "$!{entity}")
+    @ApiOperation(value = "更新$tableComment", notes = "更新$tableComment，主键必须传")
+    @PostMapping(value = "/update")
+    public BaseResponse<Boolean> update(@Validated({UpdateGroup.class}) @Valid @RequestBody $!{entity}  $!{lowEntity}) {
+        return new BaseResponse<>($!{lowTableName}Service.updateById($!{lowEntity}));
+    }
+
+}
