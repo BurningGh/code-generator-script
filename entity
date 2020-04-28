@@ -1,0 +1,67 @@
+##引入宏定义
+$!define
+##定义初始变量
+#set($tableName = $tableInfo.name)
+#set($lowTableName = $!tool.firstLowerCase($tableName))
+#set($tableComment = $tableInfo.comment)
+#set($entity = $tool.append($!{tableName}, "DO"))
+#set($lowEntity = $!tool.firstLowerCase($entity))
+
+##使用宏定义设置回调（保存位置与文件后缀）
+#save("/entity", "DO.java")
+
+##使用宏定义设置包后缀
+#setPackageSuffix("entity")
+
+##使用全局变量实现默认包导入
+import $!{tableInfo.savePackageName}.query.$!{tableName}PageQuery;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.Assert;
+
+$!autoImport
+import java.io.Serializable;
+
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+##使用宏定义实现类注释信息
+#tableComment("实体类")
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+
+public class $!{entity} implements Serializable {
+
+    private static final long serialVersionUID = $!tool.serial();
+    
+#foreach($column in $tableInfo.fullColumn)
+    #if(${column.comment})/**
+    * ${column.comment}
+    * 
+    */#end
+    #if($pk.name==$column.name)@TableId(value = "id", type = IdType.AUTO)#end   
+    
+    @ApiModelProperty(value ="$!{column.comment}",example=#if($column.name== 'createTime'||$column.name== 'updateTime')"2020-04-24 07:30:35"#else"example"#end)  
+    private $!{tool.getClsNameByFullName($column.type)} $!{column.name};
+    
+#end
+
+    public static $!{entity} Off$!{tableName}PageQuery($!{tableName}PageQuery $!{lowTableName}PageQuery){
+        Assert.notNull($!{lowTableName}PageQuery,"$!{entity} Off$!{tableName}PageQuery param null");
+        $!{entity} $!{lowEntity}=new $!{entity}();
+        BeanUtils.copyProperties($!{lowTableName}PageQuery,$!{lowEntity});
+        return $!{lowEntity};
+    }
+
+
+
+}
