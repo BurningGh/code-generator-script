@@ -73,7 +73,7 @@ public class $!{tableName}Controller{
     @ApiOperation(value = "分页获取新$tableComment", notes = "分页获取新$tableComment，按创建时间倒序")
     @PostMapping(value = "/getPage")
     public BaseResponse<IPage<$!{entity}>> getPage(@Valid @RequestBody $!{tableName}PageQuery  $!{lowTableName}PageQuery) {
-        return new BaseResponse<>(testQuestionService.page(new Page<TestQuestionDO>($!{lowTableName}PageQuery.getPage(),$!{lowTableName}PageQuery.getPageSize()).addOrder(OrderItem.desc("createTime")), 
+        return new BaseResponse<>($!{lowTableName}Service.page(new Page<$!{entity}>($!{lowTableName}PageQuery.getPage(),$!{lowTableName}PageQuery.getPageSize()).addOrder(OrderItem.desc("createTime")), 
         Wrappers.lambdaQuery($!{entity}.Off$!{tableName}PageQuery($!{lowTableName}PageQuery))));
 
     }
