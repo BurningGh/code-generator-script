@@ -24,6 +24,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import $!{tableInfo.savePackageName}.entity.$!{tableName}DO;
 import $!{tableInfo.savePackageName}.service.I$!{tableName}Service;
 import $!{tableInfo.savePackageName}.query.$!{tableName}PageQuery;
+import $!{tableInfo.savePackageName}.exception.BaseResponse;
+import $!{tableInfo.savePackageName}.group.InsertGroup;
+import $!{tableInfo.savePackageName}.group.UpdateGroup;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import io.swagger.annotations.ApiImplicitParam;
@@ -62,7 +65,7 @@ public class $!{tableName}Controller{
     public BaseResponse<$!{entity}> get(@RequestParam @Min(1) $!pk.shortType id) {
         return new BaseResponse<>($!{lowTableName}Service.getById(id));
     }
-
+    
     /**
      * 分页获取新$!{tableComment}，按创建时间倒序
      *
@@ -73,12 +76,12 @@ public class $!{tableName}Controller{
     @ApiOperation(value = "分页获取新$!{tableComment}", notes = "分页获取新$!{tableComment}，按创建时间倒序")
     @PostMapping(value = "/getPage")
     public BaseResponse<IPage<$!{entity}>> getPage(@Valid @RequestBody $!{tableName}PageQuery  $!{lowTableName}PageQuery) {
-        return new BaseResponse<>($!{lowTableName}Service.page(new Page<$!{entity}>($!{lowTableName}PageQuery.getPage(),$!{lowTableName}PageQuery.getPageSize()).addOrder(OrderItem.desc("createTime")),
+        return new BaseResponse<>($!{lowTableName}Service.page(new Page<$!{entity}>($!{lowTableName}PageQuery.getPage(),$!{lowTableName}PageQuery.getPageSize()).addOrder(OrderItem.desc("createTime")), 
         Wrappers.lambdaQuery($!{entity}.Off$!{tableName}PageQuery($!{lowTableName}PageQuery))));
 
     }
-
-
+    
+    
      /**
      * 新增$!{tableComment}
      *
@@ -91,11 +94,11 @@ public class $!{tableName}Controller{
     public BaseResponse<Boolean> add(@Validated({InsertGroup.class}) @Valid @RequestBody $!{entity}  $!{lowEntity}) {
         return new BaseResponse<>($!{lowTableName}Service.save($!{lowEntity}));
     }
-
+    
     /**
      * 批量新增$!{tableComment}
      *
-     * @param $!{lowEntity}s $!{tableComment}列表
+     * @param $!{lowEntity}s $!{tableComment}列表 
      * @return BaseResponse<Boolean>
      */
     @ApiImplicitParam(name = "$!{lowEntity}s", value = "$!{tableComment}对象列表", required = true, dataType = "List")
@@ -104,7 +107,7 @@ public class $!{tableName}Controller{
     public BaseResponse<Boolean> addList(@Validated({InsertGroup.class}) @Valid @RequestBody List<$!{entity}>  $!{lowEntity}s) {
         return new BaseResponse<>($!{lowTableName}Service.saveBatch($!{lowEntity}s));
     }
-
+    
     /**
      * 通过主键id删除$!{tableComment}
      *
@@ -117,7 +120,7 @@ public class $!{tableName}Controller{
     public BaseResponse<Boolean> delete(@RequestParam @Min(1) $!pk.shortType id) {
         return new BaseResponse<>($!{lowTableName}Service.removeById(id));
     }
-
+    
     /**
      * 通过主键id批量删除$!{tableComment}
      *
@@ -130,9 +133,9 @@ public class $!{tableName}Controller{
     public BaseResponse<Boolean> deleteList(@RequestParam @Min(1) List<$!pk.shortType> ids) {
         return new BaseResponse<>($!{lowTableName}Service.removeByIds(ids));
     }
-
-
-
+    
+    
+    
     /**
      * 通过主键id更新$!{tableComment}
      *
