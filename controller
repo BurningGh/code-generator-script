@@ -45,7 +45,7 @@ import java.util.List;
 ##使用宏定义实现类注释信息
 #tableComment("控制器")
 @RestController
-@RequestMapping("$!lowTableName")
+@RequestMapping(value="$!lowTableName",produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
 @Slf4j
 public class $!{tableName}Controller{
@@ -72,7 +72,7 @@ public class $!{tableName}Controller{
      * @param $!{lowTableName}PageQuery $!{tableComment}分页查询对象
      * @return BaseResponse<IPage<$!{entity}>>
      */
-    @ApiImplicitParam(name = "$!{lowTableName}PageQuery", value = "$!{tableComment}分页查询对象", required = true, dataType = "$!{TableName}PageQuery")
+    @ApiImplicitParam(name = "$!{lowTableName}PageQuery", value = "$!{tableComment}分页查询对象", required = true, dataType = "$!{tableName}PageQuery")
     @ApiOperation(value = "分页获取新$!{tableComment}", notes = "分页获取新$!{tableComment}，按创建时间倒序")
     @PostMapping(value = "/getPage")
     public BaseResponse<IPage<$!{entity}>> getPage(@Valid @RequestBody $!{tableName}PageQuery  $!{lowTableName}PageQuery) {
