@@ -9,7 +9,6 @@ $!define
 
 ##使用全局变量实现默认包导入
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
